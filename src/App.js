@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 
+const API_URL = 'https://student-database-backend-z9ga.onrender.com/students';
+
 function App() {
   const [students, setStudents] = useState([]);
   const [name, setName] = useState('');
@@ -11,55 +13,35 @@ function App() {
   const [bloodGroup, setBloodGroup] = useState('');
   const [editIndex, setEditIndex] = useState(null);
 
-  // Fetch all students when the component loads
   useEffect(() => {
-    axios.get('http://localhost:5000/students')
+    axios.get(API_URL)
       .then(response => setStudents(response.data))
       .catch(error => console.log(error));
   }, []);
 
-  // Handle adding or updating student data
   const handleSubmit = (e) => {
     e.preventDefault();
+    const studentData = { name, className, rollNumber, bloodGroup };
 
     if (editIndex !== null) {
-      // Update existing student
-      const updatedStudent = {
-        name,
-        className,
-        rollNumber,
-        bloodGroup
-      };
-
-      axios.put(`http://localhost:5000/students/${students[editIndex]._id}`, updatedStudent)
+      axios.put(`${API_URL}/${students[editIndex]._id}`, studentData)
         .then(response => {
           const updatedStudents = [...students];
           updatedStudents[editIndex] = response.data;
           setStudents(updatedStudents);
-          setEditIndex(null); // Reset the edit state
-          setName('');
-          setClassName('');
-          setRollNumber('');
-          setBloodGroup('');
+          resetForm();
         })
         .catch(error => console.log(error));
     } else {
-      // Add new student
-      const newStudent = { name, className, rollNumber, bloodGroup };
-
-      axios.post('http://localhost:5000/students', newStudent)
+      axios.post(API_URL, studentData)
         .then(response => {
           setStudents([...students, response.data]);
-          setName('');
-          setClassName('');
-          setRollNumber('');
-          setBloodGroup('');
+          resetForm();
         })
         .catch(error => console.log(error));
     }
   };
 
-  // Handle editing a student's data
   const handleEdit = (index) => {
     setName(students[index].name);
     setClassName(students[index].className);
@@ -68,70 +50,32 @@ function App() {
     setEditIndex(index);
   };
 
-  // Handle deleting a student
   const handleDelete = (index) => {
-    const studentId = students[index]._id;
-
-    axios.delete(`http://localhost:5000/students/${studentId}`)
+    axios.delete(`${API_URL}/${students[index]._id}`)
       .then(() => {
-        const updatedStudents = students.filter((_, i) => i !== index);
-        setStudents(updatedStudents);
+        setStudents(students.filter((_, i) => i !== index));
       })
       .catch(error => console.log(error));
+  };
+
+  const resetForm = () => {
+    setName('');
+    setClassName('');
+    setRollNumber('');
+    setBloodGroup('');
+    setEditIndex(null);
   };
 
   return (
     <div className="container mt-4">
       <h2>Student Management</h2>
-
-      {/* Form to add or update students */}
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Name</label>
-          <input
-            type="text"
-            className="form-control"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group mt-2">
-          <label>Class</label>
-          <input
-            type="text"
-            className="form-control"
-            value={className}
-            onChange={(e) => setClassName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group mt-2">
-          <label>Roll Number</label>
-          <input
-            type="text"
-            className="form-control"
-            value={rollNumber}
-            onChange={(e) => setRollNumber(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group mt-2">
-          <label>Blood Group</label>
-          <input
-            type="text"
-            className="form-control"
-            value={bloodGroup}
-            onChange={(e) => setBloodGroup(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary mt-3">
-          {editIndex !== null ? 'Update Student' : 'Add Student'}
-        </button>
+        <input type="text" className="form-control" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" required />
+        <input type="text" className="form-control mt-2" value={className} onChange={(e) => setClassName(e.target.value)} placeholder="Class" required />
+        <input type="text" className="form-control mt-2" value={rollNumber} onChange={(e) => setRollNumber(e.target.value)} placeholder="Roll Number" required />
+        <input type="text" className="form-control mt-2" value={bloodGroup} onChange={(e) => setBloodGroup(e.target.value)} placeholder="Blood Group" required />
+        <button type="submit" className="btn btn-primary mt-3">{editIndex !== null ? 'Update' : 'Add'} Student</button>
       </form>
-
-      {/* Table to display students */}
       <table className="table table-striped mt-4">
         <thead>
           <tr>
@@ -150,18 +94,8 @@ function App() {
               <td>{student.rollNumber}</td>
               <td>{student.bloodGroup}</td>
               <td>
-                <button
-                  className="btn btn-warning mr-2"
-                  onClick={() => handleEdit(index)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleDelete(index)}
-                >
-                  Delete
-                </button>
+                <button className="btn btn-warning me-2" onClick={() => handleEdit(index)}>Edit</button>
+                <button className="btn btn-danger" onClick={() => handleDelete(index)}>Delete</button>
               </td>
             </tr>
           ))}

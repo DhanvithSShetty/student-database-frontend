@@ -3,24 +3,33 @@ import React, { useState, useEffect } from 'react';
 
 const StudentForm = ({ studentToEdit, handleSave }) => {
   const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [grade, setGrade] = useState('');
+  const [className, setClassName] = useState('');
+  const [rollNumber, setRollNumber] = useState('');
+  const [bloodGroup, setBloodGroup] = useState('');
 
   useEffect(() => {
     if (studentToEdit) {
       setName(studentToEdit.name);
-      setAge(studentToEdit.age);
-      setGrade(studentToEdit.grade);
+      setClassName(studentToEdit.className);
+      setRollNumber(studentToEdit.rollNumber);
+      setBloodGroup(studentToEdit.bloodGroup);
     }
   }, [studentToEdit]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (name && age && grade) {
-      handleSave({ id: studentToEdit ? studentToEdit.id : Date.now(), name, age, grade });
+    if (name && className && rollNumber && bloodGroup) {
+      handleSave({
+        _id: studentToEdit ? studentToEdit._id : null,
+        name,
+        className,
+        rollNumber,
+        bloodGroup,
+      });
       setName('');
-      setAge('');
-      setGrade('');
+      setClassName('');
+      setRollNumber('');
+      setBloodGroup('');
     }
   };
 
@@ -33,27 +42,40 @@ const StudentForm = ({ studentToEdit, handleSave }) => {
           className="form-control"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
         />
       </div>
-      <div className="form-group">
-        <label>Age</label>
-        <input
-          type="number"
-          className="form-control"
-          value={age}
-          onChange={(e) => setAge(e.target.value)}
-        />
-      </div>
-      <div className="form-group">
-        <label>Grade</label>
+      <div className="form-group mt-2">
+        <label>Class</label>
         <input
           type="text"
           className="form-control"
-          value={grade}
-          onChange={(e) => setGrade(e.target.value)}
+          value={className}
+          onChange={(e) => setClassName(e.target.value)}
+          required
         />
       </div>
-      <button type="submit" className="btn btn-primary">
+      <div className="form-group mt-2">
+        <label>Roll Number</label>
+        <input
+          type="text"
+          className="form-control"
+          value={rollNumber}
+          onChange={(e) => setRollNumber(e.target.value)}
+          required
+        />
+      </div>
+      <div className="form-group mt-2">
+        <label>Blood Group</label>
+        <input
+          type="text"
+          className="form-control"
+          value={bloodGroup}
+          onChange={(e) => setBloodGroup(e.target.value)}
+          required
+        />
+      </div>
+      <button type="submit" className="btn btn-primary mt-3">
         {studentToEdit ? 'Update Student' : 'Add Student'}
       </button>
     </form>

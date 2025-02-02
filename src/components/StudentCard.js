@@ -7,17 +7,18 @@ const StudentCard = ({ student, handleEdit, handleDelete }) => {
       <div className="card">
         <div className="card-body">
           <h5 className="card-title">{student.name}</h5>
-          <p className="card-text">Age: {student.age}</p>
-          <p className="card-text">Grade: {student.grade}</p>
+          <p className="card-text">Class: {student.className}</p>
+          <p className="card-text">Roll Number: {student.rollNumber}</p>
+          <p className="card-text">Blood Group: {student.bloodGroup}</p>
           <button
-            className="btn btn-warning mr-2"
-            onClick={() => handleEdit(student.id)}
+            className="btn btn-warning me-2"
+            onClick={() => handleEdit(student)}
           >
             Edit
           </button>
           <button
             className="btn btn-danger"
-            onClick={() => handleDelete(student.id)}
+            onClick={() => handleDelete(student._id)}
           >
             Delete
           </button>
